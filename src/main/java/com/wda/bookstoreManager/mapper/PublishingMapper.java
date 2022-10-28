@@ -23,8 +23,8 @@ public class PublishingMapper {
         return mapper.map(publishingResponseDTO, PublishingEntity.class);
     }
 
-    public PublishingResponseDTO toDTO(UsersEntity usersEntity){
-        return mapper.map(usersEntity, PublishingResponseDTO.class);
+    public PublishingRequestDTO toDTO(UsersEntity usersEntity){
+        return mapper.map(usersEntity, PublishingRequestDTO.class);
     }
 
 }

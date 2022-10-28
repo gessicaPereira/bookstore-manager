@@ -1,16 +1,13 @@
 package com.wda.bookstoreManager.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "publishing")
 public class PublishingEntity {
 
@@ -25,6 +22,6 @@ public class PublishingEntity {
     private String city;
 
     @OneToMany(mappedBy = "publishing", fetch = FetchType.LAZY)
-    private List<BooksEntity> booksEntities;
+    private List<BooksEntity> books;
 
 }

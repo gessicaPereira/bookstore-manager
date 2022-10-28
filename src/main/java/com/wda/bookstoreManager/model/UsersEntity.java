@@ -1,13 +1,12 @@
 package com.wda.bookstoreManager.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,7 +29,7 @@ public class UsersEntity {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @OneToMany(mappedBy= "usersEntity", cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy= "users", cascade = CascadeType.MERGE)
     private List<RentEntity> rentEntities;
 
 }

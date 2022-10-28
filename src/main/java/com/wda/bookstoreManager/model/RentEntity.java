@@ -1,11 +1,14 @@
 package com.wda.bookstoreManager.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wda.bookstoreManager.model.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -20,21 +23,25 @@ public class RentEntity {
     private Integer id;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "booksEntity")
-    private BooksEntity booksEntity;
+    //@JsonIgnoreProperties("rents")
+    //@JsonIgnore
+    @JoinColumn
+    private BooksEntity books;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "usersEntity_id_fk")
-    private UsersEntity usersEntity;
+    //@JsonIgnoreProperties("users")
+   // @JsonIgnore
+    @JoinColumn
+    private UsersEntity users;
 
-    @Column(name = "rental_date", nullable = false)
-    private LocalDateTime rental_date;
+    @Column(name = "rental_date")
+    private LocalDate rental_date;
 
     @Column(name = "forecast_return", nullable = false)
-    private LocalDateTime forecast_return;
+    private LocalDate forecast_return;
 
     @Column(name = "return_date", nullable = false)
-    private LocalDateTime return_date;
+    private LocalDate return_date;
 
     @Enumerated(EnumType.STRING)
     private Status status;

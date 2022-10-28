@@ -13,12 +13,9 @@ import com.wda.bookstoreManager.service.PublishingService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 
 @Service
-@Transactional
 public class BookServiceImpl implements BookService {
     private final BooksRepository booksRepository;
     private final PublishingService publishingService;
@@ -51,7 +48,7 @@ public class BookServiceImpl implements BookService {
 
     }
 
-    public BooksResponseDTO findById(Integer bookId){
+    public BooksResponseDTO getById(Integer bookId){
         return booksRepository.findById(bookId)
                 .map(booksMapper::toBookDTO)
                 .orElseThrow(() -> new BookNotFoundException(bookId));
@@ -76,7 +73,7 @@ public class BookServiceImpl implements BookService {
     }
 
     public BooksResponseDTO updateById(Integer bookId, BooksRequestDTO booksRequestDTO){
-        BooksEntity foundBook  = verifyExist(bookId);
+        BooksEntity foundBook  = verifyAndGet(bookId);
         PublishingEntity foundPublishing = publishingService.findPublishingId(booksRequestDTO.getPublishingId());
 
         BooksEntity bookToUpdate = booksMapper.toBookModel(booksRequestDTO);
@@ -91,8 +88,15 @@ public class BookServiceImpl implements BookService {
 
     }
 
-    public BooksEntity verifyExist(Integer bookId){
-        return booksRepository.findById(bookId)
-                .orElseThrow(()-> new BookNotFoundException(bookId));
+    public BooksEntity verifyAndGet(Integer bookId){
+        return booksRepository.findBookById(bookId);
+                /*.orElseThrow(()-> new BookNotFoundException(bookId));*/
     }
+
+  /*  public void decreaseQuantity(BooksEntity books){
+        if(books.getQuantity() > 0){
+            books.setQuantity(books.getQuantity() -1);
+            booksRepository.save(books);
+        }
+    }*/
 }

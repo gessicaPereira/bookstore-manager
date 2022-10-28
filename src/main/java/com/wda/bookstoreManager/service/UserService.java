@@ -6,7 +6,6 @@ import com.wda.bookstoreManager.model.UsersEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Optional;
 
 public interface UserService {
 
@@ -20,6 +19,6 @@ public interface UserService {
 
     Page<UsersEntity> getAll(Pageable pageable);
 
-    Optional<UsersEntity> findById(Integer id);
+   // UsersEntity findById(Integer id);
 
 }

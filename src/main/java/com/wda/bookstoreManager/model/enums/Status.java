@@ -1,7 +1,6 @@
 package com.wda.bookstoreManager.model.enums;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,8 +9,10 @@ import lombok.NoArgsConstructor;
 @Getter
 public enum Status {
 
-    AVAILABLE("Available"),
-    UNAVAILABLE("Unavailable");
+    PROGRESS("Progress"),
+    DEADLINE("Deadline"),
+    LATE("Late"),
+    NOT_FOUND("Not found");
 
     private String status;
 

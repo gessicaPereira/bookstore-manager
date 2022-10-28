@@ -5,19 +5,18 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
-@Entity
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 @Table(name = "books")
 public class BooksEntity {
 
@@ -25,7 +24,7 @@ public class BooksEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @JoinColumn(name = "name")
+    @Column(name = "name")
     private String name;
 
     @Column(name = "author", nullable = false)
@@ -38,11 +37,13 @@ public class BooksEntity {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
+    @Column(columnDefinition = "integer default 0")
+    private Integer quantityRented;
     @ManyToOne(cascade = {CascadeType.MERGE})
-    @JoinColumn(name = "publishing")
+    @JoinColumn
     private PublishingEntity publishing;
 
-    @OneToMany(mappedBy = "booksEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "books", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RentEntity> rentEntities;
 
 }

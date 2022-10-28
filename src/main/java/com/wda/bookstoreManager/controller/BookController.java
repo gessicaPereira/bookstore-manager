@@ -34,8 +34,8 @@ public class BookController {
     }
 
     @GetMapping("/{bookId}")
-    public BooksResponseDTO findById(@PathVariable Integer bookId) {
-        return bookService.findById(bookId);
+    public BooksResponseDTO getById(@PathVariable Integer bookId) {
+        return bookService.getById(bookId);
     }
 
     @GetMapping

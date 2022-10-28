@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
-@Transactional
 public class PublishingServiceImpl implements PublishingService {
 
     private final PublishingRepository publishingRepository;
@@ -51,7 +50,7 @@ public class PublishingServiceImpl implements PublishingService {
 
     public void delete(Integer id){
         PublishingEntity publishingDeleted = getById(id);
-        if(!publishingDeleted.getBooksEntities().isEmpty()){
+        if(!publishingDeleted.getBooks().isEmpty()){
             return;
         }
         publishingRepository.deleteById(id);

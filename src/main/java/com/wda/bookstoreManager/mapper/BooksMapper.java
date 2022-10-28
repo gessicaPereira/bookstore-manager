@@ -17,8 +17,8 @@ public class BooksMapper {
         return mapper.map(booksRequestDTO, BooksEntity.class);
     }
 
-    public BooksEntity toResponseModel(BooksResponseDTO booksResponseDTO){
-        return mapper.map(booksResponseDTO, BooksEntity.class);
+    public BooksRequestDTO toDTO(BooksEntity books){
+        return mapper.map(books, BooksRequestDTO.class);
     }
 
     public BooksResponseDTO toBookDTO(BooksEntity booksEntity){

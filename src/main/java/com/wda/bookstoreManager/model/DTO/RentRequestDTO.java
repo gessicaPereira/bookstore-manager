@@ -7,26 +7,30 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BooksRequestDTO {
+public class RentRequestDTO {
 
     @NotNull
-    public String name;
+    public Integer bookId;
 
     @NotNull
-    public String author;
+    public Integer user;
 
-    @NotNull
-    public Integer publishingId;
+    //public Integer quantity;
+    //@NotNull
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    public LocalDate rental_date;
 
     @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
-    public LocalDate launch;
+    private LocalDate return_date;
 
     @NotNull
-    public Integer quantity;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    public LocalDate forecast_return;
+
+
 }
