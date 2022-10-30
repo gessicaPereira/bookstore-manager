@@ -4,6 +4,7 @@ import com.wda.bookstoreManager.mapper.UserMapper;
 import com.wda.bookstoreManager.model.DTO.UserResponseDTO;
 import com.wda.bookstoreManager.model.DTO.UsersRequestDTO;
 import com.wda.bookstoreManager.model.UsersEntity;
+import com.wda.bookstoreManager.open_api.controllers.UserControllerOpenApi;
 import com.wda.bookstoreManager.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,7 +17,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/users")
-public class UserController {
+public class UserController implements UserControllerOpenApi {
 
     @Autowired
     private UserService userService;

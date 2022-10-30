@@ -3,6 +3,7 @@ package com.wda.bookstoreManager.controller;
 import com.wda.bookstoreManager.mapper.BooksMapper;
 import com.wda.bookstoreManager.model.DTO.BooksRequestDTO;
 import com.wda.bookstoreManager.model.DTO.BooksResponseDTO;
+import com.wda.bookstoreManager.open_api.controllers.BooksControllerOpenApi;
 import com.wda.bookstoreManager.repository.BooksRepository;
 import com.wda.bookstoreManager.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/books")
-public class BookController {
+public class BookController implements BooksControllerOpenApi {
 
     private BookService bookService;
 

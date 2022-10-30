@@ -4,6 +4,7 @@ import com.wda.bookstoreManager.mapper.PublishingMapper;
 import com.wda.bookstoreManager.model.DTO.PublishingRequestDTO;
 import com.wda.bookstoreManager.model.DTO.PublishingResponseDTO;
 import com.wda.bookstoreManager.model.PublishingEntity;
+import com.wda.bookstoreManager.open_api.controllers.PublishingControllerOpenApi;
 import com.wda.bookstoreManager.service.PublishingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,7 +17,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/publishing")
-public class PublishingController {
+public class PublishingController implements PublishingControllerOpenApi {
 
 
     @Autowired
