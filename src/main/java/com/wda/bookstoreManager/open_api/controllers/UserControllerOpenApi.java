@@ -43,7 +43,7 @@ public interface UserControllerOpenApi {
             @ApiResponse(code = 200, message = "Success user found"),
             @ApiResponse(code = 404, message = "User not found error code")
     })
-    ResponseEntity <Object> findById(@PathVariable Integer id);
+    UserResponseDTO getById(@PathVariable Integer id);
 
     @ApiOperation(value = "List all registered users")
     @ApiResponses(value = {

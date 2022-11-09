@@ -15,7 +15,7 @@ public interface UserService {
 
     void delete (Integer id);
 
-    UsersEntity getById (Integer id);
+    UserResponseDTO getById (Integer id);
 
     Page<UsersEntity> getAll(Pageable pageable);
 

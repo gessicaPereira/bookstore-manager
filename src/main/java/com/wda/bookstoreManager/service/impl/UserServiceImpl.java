@@ -1,6 +1,9 @@
 package com.wda.bookstoreManager.service.impl;
 
+import com.wda.bookstoreManager.exception.BookNotFoundException;
 import com.wda.bookstoreManager.mapper.UserMapper;
+import com.wda.bookstoreManager.model.BooksEntity;
+import com.wda.bookstoreManager.model.DTO.BooksResponseDTO;
 import com.wda.bookstoreManager.model.DTO.UserResponseDTO;
 import com.wda.bookstoreManager.model.DTO.UsersRequestDTO;
 import com.wda.bookstoreManager.model.UsersEntity;
@@ -33,8 +36,8 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public void updateUser(Integer id, UserResponseDTO userResponseDTO){
-        UsersEntity updated = getById(id);
+    public void updateUser(Integer userId, UserResponseDTO userResponseDTO){
+        UsersEntity updated = verifyAndGet(userId);
 
         UsersEntity userUpdate = userMapper.toModel(userResponseDTO);
         userUpdate.setId(updated.getId());
@@ -46,16 +49,23 @@ public class UserServiceImpl implements UserService {
         usersRepository.save(userUpdate);
     }
 
-    public UsersEntity getById(Integer id){
-        return usersRepository.findById(id);
+    public UsersEntity verifyAndGet(Integer userId){
+        return usersRepository.findUserById(userId);
+        /*.orElseThrow(()-> new BookNotFoundException(bookId));*/
+    }
+
+    public UserResponseDTO getById(Integer userId){
+        return usersRepository.findById(userId)
+                .map(userMapper::toUserDTO)
+                .orElseThrow(() -> new BookNotFoundException(userId));
     }
 
     public void delete (Integer id){
-        UsersEntity userDeleted = getById(id);
+        UsersEntity userDeleted = usersRepository.findUserById(id);
         if(!userDeleted.getRentEntities().isEmpty()){
             return;
         }
-        usersRepository.deleteById(id);
+        usersRepository.deleteById(userDeleted.getId());
     }
 
     public Page<UsersEntity> getAll(Pageable pageable){

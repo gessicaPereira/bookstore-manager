@@ -51,9 +51,7 @@ public class UserController implements UserControllerOpenApi {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity <Object> findById(@PathVariable Integer id){
-        Optional<UsersEntity> usersEntityOptional = Optional.ofNullable(userService.getById(id));
-        return usersEntityOptional.<ResponseEntity<Object>>map(usersEntity -> ResponseEntity.status(HttpStatus.OK).body(usersEntity)).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found"));
+    public UserResponseDTO getById(Integer id) {
+        return userService.getById(id);
     }
-
 }
