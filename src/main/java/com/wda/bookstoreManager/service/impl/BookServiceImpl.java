@@ -32,7 +32,7 @@ public class BookServiceImpl implements BookService {
 
     public BooksResponseDTO createBook(BooksRequestDTO booksRequestDTO){
         verifyIfBookIsAlreadyRegistered(booksRequestDTO);
-        PublishingEntity foundPublishing = publishingService.findPublishingId(booksRequestDTO.getPublishingId());
+        PublishingEntity foundPublishing = publishingService.verifyAndGet(booksRequestDTO.getPublishingId());
 
         if (booksRequestDTO.getQuantity() < 1){
             return null;
@@ -74,7 +74,7 @@ public class BookServiceImpl implements BookService {
 
     public BooksResponseDTO updateById(Integer bookId, BooksRequestDTO booksRequestDTO){
         BooksEntity foundBook  = verifyAndGet(bookId);
-        PublishingEntity foundPublishing = publishingService.findPublishingId(booksRequestDTO.getPublishingId());
+        PublishingEntity foundPublishing = publishingService.verifyAndGet(booksRequestDTO.getPublishingId());
 
         BooksEntity bookToUpdate = booksMapper.toBookModel(booksRequestDTO);
         bookToUpdate.setId(foundBook.getId());

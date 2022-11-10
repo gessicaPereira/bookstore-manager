@@ -20,6 +20,7 @@ public class UserMapper {
     public UsersEntity toModel(UserResponseDTO userResponseDTO){
         return mapper.map(userResponseDTO, UsersEntity.class);
     }
+
     public UserResponseDTO toUserDTO(UsersEntity usersEntity){
         return mapper.map(usersEntity, UserResponseDTO.class);
     }

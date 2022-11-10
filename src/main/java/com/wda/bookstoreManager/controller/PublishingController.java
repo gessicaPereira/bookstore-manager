@@ -51,10 +51,8 @@ public class PublishingController implements PublishingControllerOpenApi {
                 .body(publishingService.getAll(pageable));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity <Object> findById(@PathVariable Integer id){
-        Optional<PublishingEntity> publishingEntityOptional = Optional.ofNullable(publishingService.getById(id));
-        return publishingEntityOptional.<ResponseEntity<Object>>map(publishingEntity -> ResponseEntity.status(HttpStatus.OK).body(publishingEntity)).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Publishing not found"));
+    @GetMapping("/{publishingId}")
+    public PublishingResponseDTO getById(Integer publishingId) {
+        return publishingService.getById(publishingId);
     }
-
 }

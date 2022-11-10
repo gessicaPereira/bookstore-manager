@@ -1,9 +1,15 @@
 package com.wda.bookstoreManager.service.impl;
 
+import com.wda.bookstoreManager.exception.BookNotFoundException;
+import com.wda.bookstoreManager.exception.DeleteDeniedException;
+import com.wda.bookstoreManager.exception.DeletePublishingDeniedException;
+import com.wda.bookstoreManager.exception.PublishingNotFoundException;
 import com.wda.bookstoreManager.mapper.PublishingMapper;
 import com.wda.bookstoreManager.model.DTO.PublishingRequestDTO;
 import com.wda.bookstoreManager.model.DTO.PublishingResponseDTO;
+import com.wda.bookstoreManager.model.DTO.UserResponseDTO;
 import com.wda.bookstoreManager.model.PublishingEntity;
+import com.wda.bookstoreManager.model.UsersEntity;
 import com.wda.bookstoreManager.repository.PublishingRepository;
 import com.wda.bookstoreManager.service.PublishingService;
 import org.springframework.data.domain.Page;
@@ -34,7 +40,7 @@ public class PublishingServiceImpl implements PublishingService {
 
     @Override
     public void updatePublishing(Integer id, PublishingResponseDTO publishingResponseDTO){
-        PublishingEntity updated = getById(id);
+        PublishingEntity updated = verifyAndGet(id);
 
         PublishingEntity publishingUpdate = publishingMapper.toModel(publishingResponseDTO);
         publishingUpdate.setId(updated.getId());
@@ -44,29 +50,31 @@ public class PublishingServiceImpl implements PublishingService {
         publishingRepository.save(publishingUpdate);
     }
 
-    public PublishingEntity getById(Integer id){
-        return publishingRepository.findById(id);
+    public PublishingEntity verifyAndGet(Integer publishingId){
+        return publishingRepository.findPublishingById(publishingId);
     }
 
-    public void delete(Integer id){
-        PublishingEntity publishingDeleted = getById(id);
+    public void delete(Integer publishingId){
+        PublishingEntity publishingDeleted = publishingRepository.findPublishingById(publishingId);
         if(!publishingDeleted.getBooks().isEmpty()){
-            return;
+            throw new DeletePublishingDeniedException();
         }
-        publishingRepository.deleteById(id);
+        publishingRepository.deleteById(publishingDeleted.getId());
     }
 
     public Page<PublishingEntity> getAll(Pageable pageable){
         return publishingRepository.findAll(pageable);
     }
 
-    public Optional<PublishingEntity> findById(Integer id){
-        return Optional.ofNullable(publishingRepository.findById(id));
+    public PublishingResponseDTO getById(Integer publishingId){
+        return publishingRepository.findById(publishingId)
+                .map(publishingMapper::toDTO)
+                .orElseThrow(() -> new PublishingNotFoundException(publishingId));
     }
 
-    public PublishingEntity findPublishingId(Integer id){
+    /*public PublishingEntity findPublishingId(Integer id){
         return publishingRepository.findById(id);
-    }
+    }*/
 
 
   /*  public PublishingEntity verifyExist(Long id) {

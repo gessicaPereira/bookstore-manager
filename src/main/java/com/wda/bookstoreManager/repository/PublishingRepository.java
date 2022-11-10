@@ -7,11 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PublishingRepository extends JpaRepository<PublishingEntity, Long> {
+public interface PublishingRepository extends JpaRepository<PublishingEntity, Integer> {
 
-    Page<PublishingEntity> findAll(Pageable pageable);
+    //Page<PublishingEntity> findAll(Pageable pageable);
 
-    PublishingEntity findById(Integer id);
+    PublishingEntity findPublishingById(Integer id);
 
     void deleteById(Integer id);
 

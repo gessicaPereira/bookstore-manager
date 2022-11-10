@@ -1,9 +1,8 @@
 package com.wda.bookstoreManager.service.impl;
 
-import com.wda.bookstoreManager.exception.BookNotFoundException;
+import com.wda.bookstoreManager.exception.DeleteDeniedException;
+import com.wda.bookstoreManager.exception.UserNotFoundException;
 import com.wda.bookstoreManager.mapper.UserMapper;
-import com.wda.bookstoreManager.model.BooksEntity;
-import com.wda.bookstoreManager.model.DTO.BooksResponseDTO;
 import com.wda.bookstoreManager.model.DTO.UserResponseDTO;
 import com.wda.bookstoreManager.model.DTO.UsersRequestDTO;
 import com.wda.bookstoreManager.model.UsersEntity;
@@ -57,13 +56,13 @@ public class UserServiceImpl implements UserService {
     public UserResponseDTO getById(Integer userId){
         return usersRepository.findById(userId)
                 .map(userMapper::toUserDTO)
-                .orElseThrow(() -> new BookNotFoundException(userId));
+                .orElseThrow(() -> new UserNotFoundException(userId));
     }
 
     public void delete (Integer id){
         UsersEntity userDeleted = usersRepository.findUserById(id);
         if(!userDeleted.getRentEntities().isEmpty()){
-            return;
+            throw new DeleteDeniedException();
         }
         usersRepository.deleteById(userDeleted.getId());
     }

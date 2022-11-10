@@ -16,13 +16,13 @@ public interface PublishingService {
 
     void delete(Integer id);
 
-    PublishingEntity getById(Integer id);
+    PublishingEntity verifyAndGet(Integer publishingId);
 
     Page<PublishingEntity> getAll(Pageable pageable);
 
-    Optional<PublishingEntity> findById(Integer id);
+    PublishingResponseDTO getById(Integer publishingId);
 
-    PublishingEntity findPublishingId(Integer id);
+    //PublishingEntity findPublishingById(Integer id);
 
    // PublishingEntity verifyExist(Long publishingId);
 

@@ -49,5 +49,5 @@ public interface PublishingControllerOpenApi {
             @ApiResponse(code = 200, message = "Success publishing found"),
             @ApiResponse(code = 404, message = "Publishing not found error")
     })
-    ResponseEntity <Object> findById(@PathVariable Integer id);
+    PublishingResponseDTO getById(@PathVariable Integer publishingId);
 }
