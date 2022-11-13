@@ -28,9 +28,10 @@ public class PublishingController implements PublishingControllerOpenApi {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public void createPublishing(@RequestBody PublishingRequestDTO publishingRequestDTO){
+    public void createPublishing(PublishingRequestDTO publishingRequestDTO) {
         publishingService.createPublishing(publishingRequestDTO);
     }
+
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

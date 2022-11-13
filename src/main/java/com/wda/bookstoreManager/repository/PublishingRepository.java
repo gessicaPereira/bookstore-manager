@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface PublishingRepository extends JpaRepository<PublishingEntity, Integer> {
 
@@ -14,6 +16,8 @@ public interface PublishingRepository extends JpaRepository<PublishingEntity, In
     PublishingEntity findPublishingById(Integer id);
 
     void deleteById(Integer id);
+
+    Optional<PublishingEntity> findByName(String name);
 
    // PublishingEntity verifyExist(Long id);
 }

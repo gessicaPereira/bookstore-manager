@@ -1,5 +1,6 @@
 package com.wda.bookstoreManager.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -21,6 +22,7 @@ public class PublishingEntity {
     @Column(name = "city", nullable = false)
     private String city;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "publishing", fetch = FetchType.LAZY)
     private List<BooksEntity> books;
 

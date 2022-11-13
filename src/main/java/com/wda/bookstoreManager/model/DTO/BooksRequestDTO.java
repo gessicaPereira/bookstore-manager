@@ -24,7 +24,7 @@ public class BooksRequestDTO {
     public Integer publishingId;
 
     @NotNull
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     public LocalDate launch;
 
     @NotNull

@@ -1,9 +1,6 @@
 package com.wda.bookstoreManager.service.impl;
 
-import com.wda.bookstoreManager.exception.BookNotFoundException;
-import com.wda.bookstoreManager.exception.DeleteDeniedException;
-import com.wda.bookstoreManager.exception.DeletePublishingDeniedException;
-import com.wda.bookstoreManager.exception.PublishingNotFoundException;
+import com.wda.bookstoreManager.exception.*;
 import com.wda.bookstoreManager.mapper.PublishingMapper;
 import com.wda.bookstoreManager.model.DTO.PublishingRequestDTO;
 import com.wda.bookstoreManager.model.DTO.PublishingResponseDTO;
@@ -34,6 +31,7 @@ public class PublishingServiceImpl implements PublishingService {
 
     @Override
     public void createPublishing(PublishingRequestDTO publishingRequestDTO){
+        verifyExistName(publishingRequestDTO.getName());
         PublishingEntity publishingToCreate = publishingMapper.toPublishingModel(publishingRequestDTO);
         publishingRepository.save(publishingToCreate);
     }
@@ -72,6 +70,13 @@ public class PublishingServiceImpl implements PublishingService {
                 .orElseThrow(() -> new PublishingNotFoundException(publishingId));
     }
 
+    private void verifyExistName(String name){
+        Optional<PublishingEntity> duplicatedPublishing = publishingRepository
+                .findByName(name);
+        if(duplicatedPublishing.isPresent()){
+            throw new PublishingAlreadyExistsException(name);
+        }
+    }
     /*public PublishingEntity findPublishingId(Integer id){
         return publishingRepository.findById(id);
     }*/

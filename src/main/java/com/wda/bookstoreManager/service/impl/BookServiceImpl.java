@@ -2,6 +2,7 @@ package com.wda.bookstoreManager.service.impl;
 
 import com.wda.bookstoreManager.exception.BookAlreadyExistException;
 import com.wda.bookstoreManager.exception.BookNotFoundException;
+import com.wda.bookstoreManager.exception.InvalidQuantityException;
 import com.wda.bookstoreManager.mapper.BooksMapper;
 import com.wda.bookstoreManager.model.BooksEntity;
 import com.wda.bookstoreManager.model.DTO.BooksRequestDTO;
@@ -35,7 +36,7 @@ public class BookServiceImpl implements BookService {
         PublishingEntity foundPublishing = publishingService.verifyAndGet(booksRequestDTO.getPublishingId());
 
         if (booksRequestDTO.getQuantity() < 1){
-            return null;
+            throw new InvalidQuantityException();
         }
 
         BooksEntity bookToSave = booksMapper.toBookModel(booksRequestDTO);
@@ -77,12 +78,12 @@ public class BookServiceImpl implements BookService {
         PublishingEntity foundPublishing = publishingService.verifyAndGet(booksRequestDTO.getPublishingId());
 
         BooksEntity bookToUpdate = booksMapper.toBookModel(booksRequestDTO);
-        bookToUpdate.setId(foundBook.getId());
+        bookToUpdate.setId(bookId);
         bookToUpdate.setPublishing(foundPublishing);
-        bookToUpdate.setName(foundBook.getName());
-        bookToUpdate.setAuthor(foundBook.getAuthor());
-        bookToUpdate.setQuantity(foundBook.getQuantity());
-        bookToUpdate.setLaunch(foundBook.getLaunch());
+        bookToUpdate.setName(bookToUpdate.getName());
+        bookToUpdate.setAuthor(bookToUpdate.getAuthor());
+        bookToUpdate.setQuantityRented(bookToUpdate.getQuantityRented());
+        bookToUpdate.setLaunch(bookToUpdate.getLaunch());
         BooksEntity updatedBook = booksRepository.save(bookToUpdate);
         return booksMapper.toBookDTO(updatedBook);
 
