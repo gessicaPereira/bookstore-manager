@@ -37,10 +37,39 @@ public class RentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RentResponseDTO createRent(@RequestBody RentRequestDTO rentRequestDTO) {
-        return rentService.createRent(rentRequestDTO);
+    public void createRent(@RequestBody RentRequestDTO rentRequestDTO) {
+        rentService.createRent(rentRequestDTO);
     }
 
+    @GetMapping
+    public Page<RentResponseDTO> getAll(Pageable pageable) {
+        return rentService.getAll(pageable);
+    }
+
+    @GetMapping("/{id}")
+    public RentResponseDTO getById(@PathVariable Integer id) {
+        return rentService.getById(id);
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public RentResponseDTO update(@PathVariable Integer id, @RequestBody RentRequestDTO rentRequestDTO) {
+        return rentService.update(id, rentRequestDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Integer id) {
+        rentService.delete(id);
+    }
+
+    @PutMapping("/devolution/{id}")
+    public void devolution(@PathVariable Integer id) {
+        rentService.devolution(id);
+    }
+}
+
+    /*
     @DeleteMapping("/rent")
     public void delete(@PathVariable RentEntity rent) {
         rentService.delete(rent);
@@ -66,4 +95,4 @@ public class RentController {
         return rentService.findById(id);
     }
 */
-}
+

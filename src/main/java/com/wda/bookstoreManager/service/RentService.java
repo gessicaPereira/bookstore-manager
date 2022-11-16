@@ -10,12 +10,17 @@ import java.util.Optional;
 
 public interface RentService {
 
-    RentResponseDTO createRent(RentRequestDTO rentRequestDTO);
+    void createRent(RentRequestDTO rentRequestDTO);
 
-    void delete(RentEntity rent);
+    Page<RentResponseDTO> getAll(Pageable pageable);
 
-    Page<RentResponseDTO> findAll(Pageable pageable);
+    RentResponseDTO getById(Integer id);
 
-    Optional<RentResponseDTO> getById(Integer id);
+    RentResponseDTO update(Integer id, RentRequestDTO rentRequestDTO);
+
+    void delete(Integer id);
+
+    void devolution(Integer id);
+
 
 }

@@ -19,6 +19,8 @@ public interface UserService {
 
     Page<UsersEntity> getAll(Pageable pageable);
 
+    UsersEntity verifyAndGet(Integer userId);
+
    // UsersEntity findById(Integer id);
 
 }

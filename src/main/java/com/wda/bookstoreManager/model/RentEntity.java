@@ -1,5 +1,6 @@
 package com.wda.bookstoreManager.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.wda.bookstoreManager.model.enums.Status;
@@ -22,25 +23,23 @@ public class RentEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @JsonIgnore
     @ManyToOne(cascade = CascadeType.MERGE)
-    //@JsonIgnoreProperties("rents")
-    //@JsonIgnore
     @JoinColumn
     private BooksEntity books;
 
+    @JsonIgnore
     @ManyToOne(cascade = CascadeType.MERGE)
-    //@JsonIgnoreProperties("users")
-   // @JsonIgnore
     @JoinColumn
     private UsersEntity users;
 
-    @Column(name = "rental_date")
+    @Column(name = "rental_date", nullable = false)
     private LocalDate rental_date;
 
     @Column(name = "forecast_return", nullable = false)
     private LocalDate forecast_return;
 
-    @Column(name = "return_date", nullable = false)
+    @Column(name = "return_date")
     private LocalDate return_date;
 
     @Enumerated(EnumType.STRING)

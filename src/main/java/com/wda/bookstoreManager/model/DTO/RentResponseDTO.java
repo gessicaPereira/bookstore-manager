@@ -17,14 +17,14 @@ public class RentResponseDTO {
 
     public UserResponseDTO users;
 
-    public BooksResponseDTO booksDTO;
-
-    public Status status;
+    public BooksResponseDTO books;
 
     public LocalDate rental_date;
 
     public LocalDate forecast_return;
 
     public LocalDate return_date;
+
+    public Status status;
 
 }
