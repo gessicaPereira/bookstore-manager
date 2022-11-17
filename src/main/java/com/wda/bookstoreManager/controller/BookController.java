@@ -28,11 +28,13 @@ public class BookController implements BooksControllerOpenApi {
         this.booksRepository = booksRepository;
     }
 
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BooksResponseDTO createBook(@RequestBody BooksRequestDTO booksRequestDTO){
+    public BooksResponseDTO createBook(@RequestBody BooksRequestDTO booksRequestDTO) {
         return bookService.createBook(booksRequestDTO);
     }
+
 
     @GetMapping("/{bookId}")
     public BooksResponseDTO getById(@PathVariable Integer bookId) {

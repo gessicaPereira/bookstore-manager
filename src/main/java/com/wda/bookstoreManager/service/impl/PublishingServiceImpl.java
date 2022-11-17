@@ -49,7 +49,8 @@ public class PublishingServiceImpl implements PublishingService {
     }
 
     public PublishingEntity verifyAndGet(Integer publishingId){
-        return publishingRepository.findPublishingById(publishingId);
+        return publishingRepository.findById(publishingId)
+                .orElseThrow(() -> new PublishingNotFoundException(publishingId));
     }
 
     public void delete(Integer publishingId){

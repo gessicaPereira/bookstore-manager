@@ -13,7 +13,7 @@ public interface BooksRepository extends JpaRepository<BooksEntity, Integer> {
 
     Optional<BooksEntity> findByName(String name);
 
-    BooksEntity findBookById(Integer id);
+   // BooksEntity findBookById(Integer id);
 
    // Optional<BooksEntity> findById(Integer bookId);
 

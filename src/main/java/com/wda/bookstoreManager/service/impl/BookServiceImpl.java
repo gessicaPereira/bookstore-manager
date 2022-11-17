@@ -1,9 +1,6 @@
 package com.wda.bookstoreManager.service.impl;
 
-import com.wda.bookstoreManager.exception.BookAlreadyExistException;
-import com.wda.bookstoreManager.exception.BookNotFoundException;
-import com.wda.bookstoreManager.exception.InvalidDateReturnException;
-import com.wda.bookstoreManager.exception.InvalidQuantityException;
+import com.wda.bookstoreManager.exception.*;
 import com.wda.bookstoreManager.mapper.BooksMapper;
 import com.wda.bookstoreManager.model.BooksEntity;
 import com.wda.bookstoreManager.model.DTO.BooksRequestDTO;
@@ -40,17 +37,14 @@ public class BookServiceImpl implements BookService {
     }
 
     public BooksResponseDTO createBook(BooksRequestDTO booksRequestDTO){
-        verifyIfBookIsAlreadyRegistered(booksRequestDTO.getName());
+        verifyBook(booksRequestDTO.getName());
         PublishingEntity foundPublishing = publishingService.verifyAndGet(booksRequestDTO.getPublishingId());
-        verifyDate(booksRequestDTO);
-
-        if (booksRequestDTO.getQuantity() < 1){
-            throw new InvalidQuantityException();
-        }
 
         BooksEntity bookToSave = booksMapper.toBookModel(booksRequestDTO);
         bookToSave.setPublishing(foundPublishing);
+        bookToSave.setId(null);
         BooksEntity savedBook = booksRepository.save(bookToSave);
+
         return booksMapper.toBookDTO(savedBook);
 
     }
@@ -70,14 +64,23 @@ public class BookServiceImpl implements BookService {
         return booksRepository.findAll(pageable);
     }*/
 
-    private void verifyIfBookIsAlreadyRegistered(String name){
-        Optional<BooksEntity> duplicatedBook = booksRepository
-                .findByName(name);
-        if(duplicatedBook.isPresent()){
+    /*public void verifyPublishing(Integer publishingId){
+        if (publishingRepository.findById(publishingId).isEmpty()){
+            throw new PublishingNotFoundException(publishingId);
+        }
+    }*/
+
+    public void verifyBook(String name){
+        Optional<BooksEntity> duplicated = booksRepository.findByName(name);
+        if (duplicated.isPresent()){
             throw new BookAlreadyExistException(name);
         }
-
     }
+
+    /*public void verifyForCreate(BooksRequestDTO booksRequestDTO){
+        verifyBook(booksRequestDTO.getName());
+        verifyPublishing(booksRequestDTO.getPublishingId());
+    }*/
 
     public void deleteById(Integer bookId){
       BooksEntity foundBookToDelete =  booksRepository.findById(bookId)
@@ -94,22 +97,23 @@ public class BookServiceImpl implements BookService {
         bookToUpdate.setPublishing(foundPublishing);
         bookToUpdate.setName(bookToUpdate.getName());
         bookToUpdate.setAuthor(bookToUpdate.getAuthor());
-        bookToUpdate.setQuantityRented(bookToUpdate.getQuantityRented());
-        bookToUpdate.setLaunch(bookToUpdate.getLaunch());
+        bookToUpdate.setQuantityRented(foundBook.getQuantityRented());
+        bookToUpdate.setLaunch(booksRequestDTO.getLaunch());
         BooksEntity updatedBook = booksRepository.save(bookToUpdate);
         return booksMapper.toBookDTO(updatedBook);
 
     }
 
     public BooksEntity verifyAndGet(Integer bookId){
-        return booksRepository.findBookById(bookId);
-                /*.orElseThrow(()-> new BookNotFoundException(bookId));*/
+        return booksRepository.findById(bookId)
+                .orElseThrow(()-> new BookNotFoundException(bookId));
     }
 
-    private void verifyDate(BooksRequestDTO booksRequestDTO){
+    private void validateDate(BooksRequestDTO bookRequestDTO) {
         LocalDate today = LocalDate.now();
-        if (booksRequestDTO.getLaunch().isAfter(today)){
+        if (bookRequestDTO.getLaunch().isAfter(today)) {
             throw new InvalidDateReturnException("");
         }
     }
+
 }
