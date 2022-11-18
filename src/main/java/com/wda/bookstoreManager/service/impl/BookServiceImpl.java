@@ -11,6 +11,9 @@ import com.wda.bookstoreManager.repository.BooksRepository;
 import com.wda.bookstoreManager.repository.PublishingRepository;
 import com.wda.bookstoreManager.service.BookService;
 import com.wda.bookstoreManager.service.PublishingService;
+import com.wda.bookstoreManager.service.RentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,13 +29,18 @@ public class BookServiceImpl implements BookService {
 
     private final PublishingRepository publishingRepository;
     private final PublishingService publishingService;
+
+    private final RentService rentService;
     private final BooksMapper booksMapper;
 
 
-    public BookServiceImpl(BooksRepository booksRepository, PublishingService publishingService, BooksMapper booksMapper, PublishingRepository publishingRepository){
+    @Autowired
+    @Lazy
+    public BookServiceImpl(BooksRepository booksRepository, PublishingService publishingService, BooksMapper booksMapper, PublishingRepository publishingRepository, RentService rentService){
         this.booksRepository = booksRepository;
         this.publishingRepository = publishingRepository;
         this.publishingService = publishingService;
+        this.rentService = rentService;
         this.booksMapper = booksMapper;
     }
 
@@ -83,9 +91,8 @@ public class BookServiceImpl implements BookService {
     }*/
 
     public void deleteById(Integer bookId){
-      BooksEntity foundBookToDelete =  booksRepository.findById(bookId)
-                        .orElseThrow(()-> new BookNotFoundException(bookId));
-        booksRepository.deleteById(foundBookToDelete.getId());
+      rentService.verifyDeleteBook(bookId);
+        booksRepository.deleteById(bookId);
     }
 
     public BooksResponseDTO updateById(Integer bookId, BooksRequestDTO booksRequestDTO){
@@ -113,6 +120,18 @@ public class BookServiceImpl implements BookService {
         LocalDate today = LocalDate.now();
         if (bookRequestDTO.getLaunch().isAfter(today)) {
             throw new InvalidDateReturnException("");
+        }
+    }
+
+    public void incrementQuantity(BooksEntity books){
+        books.setQuantity(books.getQuantity() + 1);
+        booksRepository.save(books);
+    }
+
+    public void decrementQuantity(BooksEntity books){
+        if (books.getQuantity() > 0){
+            books.setQuantity(books.getQuantity() - 1);
+            booksRepository.save(books);
         }
     }
 

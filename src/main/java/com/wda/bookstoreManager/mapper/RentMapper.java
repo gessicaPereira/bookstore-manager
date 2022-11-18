@@ -17,9 +17,9 @@ public class RentMapper {
         return mapper.map(rentRequestDTO, RentEntity.class);
     }
 
-    public RentEntity toModel(RentResponseDTO rentResponseDTO){
+    /*public RentEntity toModel(RentResponseDTO rentResponseDTO){
         return mapper.map(rentResponseDTO, RentEntity.class);
-    }
+    }*/
 
     public RentResponseDTO toDTO(RentEntity rentEntity){
         return mapper.map(rentEntity, RentResponseDTO.class);

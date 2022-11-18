@@ -51,11 +51,12 @@ public class RentController {
         return rentService.getById(id);
     }
 
-    @PutMapping("/{id}")
+    /*@PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public RentResponseDTO update(@PathVariable Integer id, @RequestBody RentRequestDTO rentRequestDTO) {
         return rentService.update(id, rentRequestDTO);
-    }
+    }*/
+
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -64,8 +65,9 @@ public class RentController {
     }
 
     @PutMapping("/devolution/{id}")
-    public void devolution(@PathVariable Integer id) {
-        rentService.devolution(id);
+    public void devolution(@PathVariable Long id) {
+        Integer idInt = Math.toIntExact(id);
+        rentService.devolution(idInt);
     }
 }
 

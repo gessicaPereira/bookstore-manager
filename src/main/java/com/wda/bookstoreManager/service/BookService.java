@@ -21,6 +21,10 @@ public interface BookService {
 
     BooksEntity verifyAndGet(Integer bookId);
 
+    void incrementQuantity(BooksEntity books);
+
+    void decrementQuantity(BooksEntity books);
+
     //void decreaseQuantity(BooksEntity books);
 
 }

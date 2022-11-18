@@ -16,11 +16,27 @@ public interface RentService {
 
     RentResponseDTO getById(Integer id);
 
-    RentResponseDTO update(Integer id, RentRequestDTO rentRequestDTO);
+    // RentResponseDTO update(Integer id, RentRequestDTO rentRequestDTO);
+
+    void devolution(Integer id);
 
     void delete(Integer id);
 
-    void devolution(Integer id);
+
+/*
+    RentResponseDTO create(RentRequestDTO rentRequestDTO);
+
+    Page<RentResponseDTO> findAll(Pageable pageable);
+
+    RentResponseDTO findById(Integer id);
+
+    //RentResponseDTO update(Integer id, RentRequestDTO rentRequestDTO);
+
+    void delete(Integer id);
+
+    RentResponseDTO devolution(Integer id);
+*/
+    void verifyDeleteBook(Integer id);
 
 
 }

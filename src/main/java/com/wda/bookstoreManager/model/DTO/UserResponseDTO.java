@@ -16,16 +16,12 @@ public class UserResponseDTO {
 
     public Integer id;
 
-    @NotNull
     public String name;
 
-    @NotNull
     public String city;
 
-    @NotNull
     public String address;
 
-    @NotNull
     public String email;
 
     public List<RentEntity> rentEntityList;

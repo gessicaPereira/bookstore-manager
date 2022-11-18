@@ -17,9 +17,9 @@ public class BooksMapper {
         return mapper.map(booksRequestDTO, BooksEntity.class);
     }
 
-    public BooksRequestDTO toDTO(BooksEntity books){
+   /* public BooksRequestDTO toDTO(BooksEntity books){
         return mapper.map(books, BooksRequestDTO.class);
-    }
+    }*/
 
     public BooksResponseDTO toBookDTO(BooksEntity booksEntity){
         return mapper.map(booksEntity, BooksResponseDTO.class);
