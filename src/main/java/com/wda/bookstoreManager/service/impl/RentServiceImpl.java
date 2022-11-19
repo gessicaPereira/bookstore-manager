@@ -1,6 +1,10 @@
 package com.wda.bookstoreManager.service.impl;
 
-import com.wda.bookstoreManager.exception.*;
+
+import com.wda.bookstoreManager.exception.InvalidDateReturnException;
+import com.wda.bookstoreManager.exception.RentAlreadyExistException;
+import com.wda.bookstoreManager.exception.RentImpossibleException;
+import com.wda.bookstoreManager.exception.RentNotFoundException;
 import com.wda.bookstoreManager.mapper.RentMapper;
 import com.wda.bookstoreManager.model.BooksEntity;
 import com.wda.bookstoreManager.model.DTO.RentRequestDTO;
@@ -8,182 +12,130 @@ import com.wda.bookstoreManager.model.DTO.RentResponseDTO;
 import com.wda.bookstoreManager.model.RentEntity;
 import com.wda.bookstoreManager.model.UsersEntity;
 import com.wda.bookstoreManager.model.enums.Status;
-import com.wda.bookstoreManager.repository.BooksRepository;
 import com.wda.bookstoreManager.repository.RentRepository;
-import com.wda.bookstoreManager.repository.UsersRepository;
 import com.wda.bookstoreManager.service.BookService;
 import com.wda.bookstoreManager.service.RentService;
 import com.wda.bookstoreManager.service.UserService;
+import net.bytebuddy.asm.Advice;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class RentServiceImpl implements RentService {
-
     private final RentRepository rentRepository;
-
-    private final BooksRepository booksRepository;
-
-    private final UsersRepository usersRepository;
-
-    private final RentMapper rentMapper;
 
     private final BookService bookService;
 
     private final UserService userService;
 
+    private RentMapper rentMapper;
 
     @Autowired
-    public RentServiceImpl(RentRepository rentRepository, RentMapper rentMapper, BookService bookService, UserService userService, BooksRepository booksRepository, UsersRepository usersRepository) {
+    @Lazy
+    public RentServiceImpl(RentRepository rentRepository, BookService bookService, UserService userService, RentMapper rentMapper){
         this.rentRepository = rentRepository;
-        this.booksRepository = booksRepository;
-        this.usersRepository = usersRepository;
-        this.rentMapper = rentMapper;
         this.bookService = bookService;
         this.userService = userService;
+        this.rentMapper = rentMapper;
     }
 
-    public void createRent(RentRequestDTO rentRequestDTO){
+    public Page<RentResponseDTO> findAll(Pageable pageable){
+        return rentRepository.findAll(pageable)
+                .map(rentMapper::toDTO);
+    }
+
+    public RentResponseDTO getById(Integer rentId){
+        return rentRepository.findById(rentId)
+                .map(rentMapper::toDTO)
+                .orElseThrow(() -> new RentNotFoundException(rentId));
+    }
+
+    public RentResponseDTO create(RentRequestDTO rentRequestDTO){
         BooksEntity foundBook = bookService.verifyAndGet(rentRequestDTO.getBookId());
         UsersEntity foundUser = userService.verifyAndGet(rentRequestDTO.getUser());
 
-        RentEntity rent = rentMapper.toRentModel(rentRequestDTO);
-        //foundBook.setQuantityRented(foundBook.getQuantityRented() +1);
-        rent.setBooks(foundBook);
-        rent.setUsers(foundUser);
-        foundBook.setQuantity(foundBook.getQuantity() -1);
-        //booksRepository.save(foundBook);
-        rent.setStatus(Status.PROGRESS);
-        rentRepository.save(rent);
+
+        RentEntity renToSave = rentMapper.toRentModel(rentRequestDTO);
+        renToSave.setBooks(foundBook);
+        renToSave.setUsers(foundUser);
+        renToSave.setStatus(enumStatusValue(renToSave.getReturn_date(), renToSave.getForecast_return()));
+        verifyCreate(foundUser, foundBook); // se der erro, passar pra linha de cima
+
+        BooksEntity alterQuantity = renToSave.getBooks();
+        verifyReturn(renToSave.getRental_date(), renToSave.getForecast_return());
+        //verifyBookQuantity(alterQuantity, false);
+
+        RentEntity savedRent = rentRepository.save(renToSave);
+        return rentMapper.toDTO(savedRent);
 
     }
 
-    public Page<RentResponseDTO> getAll(Pageable pageable){
-        return rentRepository.findAll(pageable).map(rentMapper::toDTO);
-    }
+    public RentResponseDTO devolution(Integer rentId){
+        RentEntity foundRent = verifyAndGet(rentId);
 
-    public RentResponseDTO getById(Integer id){
-        return rentRepository.findById(id).map(rentMapper::toDTO)
-                .orElseThrow(() -> new RentImpossibleException("Id not found"));
-    }
-
-    /*public RentResponseDTO update(Integer id, RentRequestDTO rentRequestDTO){
-        Optional<BooksEntity> updatedBook = booksRepository.findById(rentRequestDTO.getBookId());
-        Optional<UsersEntity> updatedUser = usersRepository.findById(rentRequestDTO.getUser());
-        Optional<RentEntity> updatedRent = rentRepository.findById(id);
-
-        if (updatedBook.isPresent()){
-            if (updatedUser.isPresent()){
-                if (updatedRent.get().getStatus().equals(Status.PROGRESS)){
-                    throw new RentImpossibleException("This rental has already been made and the book has not been delivered");
-                }
-            }
-        }
-        if (updatedRent.isEmpty()){
-            throw new RentNotFoundException(id);
-        }
-        RentEntity rent = rentMapper.toRentModel(rentRequestDTO);
-        rent.setId(id);
-        rentRepository.save(rent);
-
-        return rentMapper.toDTO(rent);
-    }*/
-
-    public void devolution(Integer id){
-        RentEntity foundRent = verify(id);
-        //verifyReturn(foundRent.getReturn_date(), foundRent.getForecast_return());
-
-        //RentEntity rentToDevolution = rentMapper.toRentModel(id);
-        foundRent.setId(id);
+        RentEntity rentToSave = foundRent;
         foundRent.setReturn_date(LocalDate.now());
-        bookAddQuantity(foundRent.getReturn_date(), foundRent.getBooks());
-        //foundRent.setStatus(defineStatus(foundRent.getReturn_date(), foundRent.getForecast_return()));
-        RentEntity savedRent = rentRepository.save(foundRent);
-         rentMapper.toDTO(savedRent);
+        //verifyBookQuantity(rentToSave.getBooks(), true);
+
+        RentEntity savedRent = rentRepository.save(rentToSave);
+        return rentMapper.toDTO(savedRent);
+
     }
 
 
-    public void delete(Integer id){
-        RentEntity rent = rentRepository.getReferenceById(id);
-        Integer quantity = rent.getBooks().getQuantityRented();
-        verifyDelete(id);
-        rentRepository.deleteById(id);
-        rent.getBooks().setQuantityRented(quantity -1);
-    }
 
-    /*public void verifyCreate(RentRequestDTO requestDTO){
-        verifyCreateBook(requestDTO.getBookId());
-        verifyCreateUser(requestDTO.getUser());
-        verifyReturn(requestDTO.getRental_date(), requestDTO.getForecast_return());
-    }*/
-
-    private void verifyCreateBook(Integer id){
-        if(booksRepository.findById(id).isEmpty()){
-            throw new BookNotFoundException(id);
-        }
-    }
-
-    private void bookAddQuantity(LocalDate return_date, BooksEntity books){
-        if (return_date != null){
-            bookService.incrementQuantity(books);
-        }
-    }
-
-    private Status defineStatus (LocalDate return_date, LocalDate forecast_return){
+    private Status enumStatusValue(LocalDate return_date, LocalDate forecast_return){
         if (return_date == null){
-            return Status.NOT_FOUND;
-        } else if (return_date.compareTo(forecast_return) > 0){
+            return Status.PROGRESS;
+        }else if (return_date.compareTo(forecast_return) > 0){
             return Status.LATE;
-        }else if (return_date.compareTo(forecast_return) < 0) {
+        }else if (return_date.compareTo(forecast_return) < 0){
             return Status.DEADLINE;
         } else {
             return Status.DEADLINE;
         }
-
     }
 
-    private RentEntity verify(Integer id){
-        return rentRepository.findById(id)
-                .orElseThrow(()-> new RentAlreadyExistException(id));
-    }
-
-    public void verifyRent(BooksEntity books){
-        verifyQuantity(books.getQuantity());
-    }
-
-    private void verifyCreateUser(Integer id){
-        if (usersRepository.findById(id).isEmpty()){
-            throw new UserNotFoundException(id);
+    private void verifyReturn(LocalDate rental_date, LocalDate forecast_return){
+        if (forecast_return.compareTo(rental_date) < 0){
+            throw new InvalidDateReturnException("");
         }
     }
 
-    /*private void verifyReturn(LocalDate return_date, LocalDate forecast_return){
-        if(return_date.isAfter(forecast_return)){
-            throw new InvalidDateReturnException("The rental date is not possible after the return forecast!");
+    private void verifyCreate(UsersEntity users, BooksEntity books){
+        Optional<RentEntity> foundRent = rentRepository.findByBooksAndUsersAndStatus(books, users, Status.PROGRESS);
+        if (foundRent.isPresent()){
+            throw new RentImpossibleException("Not possible");
         }
-        if (return_date.isAfter(LocalDate.now())){
-            throw new RentImpossibleException("Rent must be made on the present date!");
+    }
+
+    /*private void verifyBookQuantity(BooksEntity books, boolean addQuantity){
+        if (addQuantity){
+            BooksEntity alterQuantity = books;
+            alterQuantity.setQuantity(alterQuantity.getQuantity() + 1);
+            alterQuantity.setQuantityRented(alterQuantity.getQuantityRented() - 1);
+        } else {
+            books.setQuantity(books.getQuantity() - 1);
+            books.setQuantityRented(books.getQuantityRented() + 1);
         }
     }*/
 
-    private void verifyDelete(Integer id){
-        Status status = rentRepository.findById(id).get().getStatus();
-        if (status.equals(Status.PROGRESS)){
-            throw new DeleteNotPossibleException("Rent in progress!");
+    /*private void verifyReturnExist(RentEntity foundRent){
+        if (!foundRent.getReturn_date().equals(Status.PROGRESS)){
+            throw new RentImpossibleException("Book returned!");
         }
-    }
+    }*/
 
-    private void verifyQuantity(Integer quantity){
-        if (quantity <= 0){
-            throw new InvalidQuantityException();
-        }
+    private RentEntity verifyAndGet(Integer rentId){
+        return rentRepository.findById(rentId)
+                .orElseThrow(() -> new RentNotFoundException(rentId));
     }
 
     public void verifyDeleteBook(Integer id){

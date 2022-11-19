@@ -11,8 +11,7 @@ public enum Status {
 
     PROGRESS("Progress"),
     DEADLINE("Deadline"),
-    LATE("Late"),
-    NOT_FOUND("Not found");
+    LATE("Late");
 
     private String status;
 

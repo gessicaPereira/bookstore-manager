@@ -4,6 +4,7 @@ import com.wda.bookstoreManager.model.BooksEntity;
 import com.wda.bookstoreManager.model.DTO.RentResponseDTO;
 import com.wda.bookstoreManager.model.RentEntity;
 import com.wda.bookstoreManager.model.UsersEntity;
+import com.wda.bookstoreManager.model.enums.Status;
 import org.springframework.aop.target.LazyInitTargetSource;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -23,5 +24,5 @@ public interface RentRepository extends JpaRepository<RentEntity, Integer> {
 
     List<RentEntity> findByBooks(BooksEntity books);
 
-    Optional<RentEntity> findByBooksAndUsers(BooksEntity books, UsersEntity users);
+    Optional<RentEntity> findByBooksAndUsersAndStatus(BooksEntity books, UsersEntity users, Status status);
 }

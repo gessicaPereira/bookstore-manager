@@ -6,7 +6,6 @@ import com.wda.bookstoreManager.model.BooksEntity;
 import com.wda.bookstoreManager.model.DTO.BooksRequestDTO;
 import com.wda.bookstoreManager.model.DTO.BooksResponseDTO;
 import com.wda.bookstoreManager.model.PublishingEntity;
-import com.wda.bookstoreManager.model.UsersEntity;
 import com.wda.bookstoreManager.repository.BooksRepository;
 import com.wda.bookstoreManager.repository.PublishingRepository;
 import com.wda.bookstoreManager.service.BookService;
@@ -18,7 +17,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.util.Optional;
 
