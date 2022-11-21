@@ -58,6 +58,8 @@ public class RentServiceImpl implements RentService {
 
         BooksEntity foundBook = bookService.verifyAndGet(rentRequestDTO.getBookId());
         UsersEntity foundUser = userService.verifyAndGet(rentRequestDTO.getUser());
+        verifyQuantity(foundBook.getQuantity());
+        verifyCreate(foundUser, foundBook);
 
         RentEntity rentToSave = rentMapper.toRentModel(rentRequestDTO);
         rentToSave.setBooks(foundBook);
@@ -65,22 +67,15 @@ public class RentServiceImpl implements RentService {
         rentToSave.setStatus(enumStatusValue(rentToSave.getReturn_date(), rentToSave.getForecast_return()));
         rentToSave.setId(null);
         foundBook.setQuantity(foundBook.getQuantity() -1);
-        //rentToSave.setStatus(Status.PROGRESS);
-        verifyCreate(foundUser, foundBook);
-        //verifyQuantity(foundBook.getQuantity());
+
 
         RentEntity savedRent = rentRepository.save(rentToSave);
         return rentMapper.toDTO(savedRent);
 
     }
 
-
     public void devolution(Integer id){
         RentEntity foundRent = verifyAndGet(id);
-        //verifyReturn(foundRent.getReturn_date(), foundRent.getForecast_return());
-
-        //RentEntity rentToDevolution = rentMapper.toRentModel(id);
-        //foundRent.setId(id);
         foundRent.setReturn_date(LocalDate.now());
         bookAddQuantity(foundRent.getReturn_date(), foundRent.getBooks());
         foundRent.setStatus(enumStatusValue(foundRent.getReturn_date(), foundRent.getForecast_return()));
@@ -94,7 +89,6 @@ public class RentServiceImpl implements RentService {
         }
     }
 
-
     public void delete(Integer id) {
         BooksEntity books = verifyAndGet(id).getBooks();
         rentRepository.deleteById(id);
@@ -103,26 +97,21 @@ public class RentServiceImpl implements RentService {
 
     private Status enumStatusValue(LocalDate return_date, LocalDate forecast_return){
         if (return_date == null){
-            return Status.PROGRESS;
+            return Status.PROGRESSO;
         }else if (return_date.compareTo(forecast_return) > 0){
-            return Status.LATE;
+            return Status.ATRASADO;
         }else if (return_date.compareTo(forecast_return) < 0){
-            return Status.DEADLINE;
+            return Status.DEVOLVIDO;
         } else {
-            return Status.DEADLINE;
+            return Status.DEVOLVIDO;
         }
     }
 
-    private void verifyReturn(LocalDate rental_date, LocalDate forecast_return){
-        if (forecast_return.compareTo(rental_date) < 0){
-            throw new InvalidDateReturnException("");
-        }
-    }
 
     private void verifyCreate(UsersEntity users, BooksEntity books){
-        Optional<RentEntity> foundRent = rentRepository.findByBooksAndUsersAndStatus(books, users, Status.PROGRESS);
+        Optional<RentEntity> foundRent = rentRepository.findByBooksAndUsersAndStatus(books, users, Status.PROGRESSO);
         if (foundRent.isPresent()){
-            throw new RentImpossibleException("Alguguel já registrado");
+            throw new RentImpossibleException("rent is already");
         }
     }
 
@@ -139,15 +128,8 @@ public class RentServiceImpl implements RentService {
         }
     }
 
-    private void verifyRentDelete(Integer id){
-        Status status = rentRepository.findById(id).get().getStatus();
-        if (status.equals(Status.PROGRESS)){
-            throw new DeleteNotPossibleException("Rent in progress!");
-        }
-    }
-
     private void verifyQuantity(Integer quantity){
-        if (quantity <= 0){
+        if (quantity == 0){
             throw new InvalidQuantityException();
         }
     }

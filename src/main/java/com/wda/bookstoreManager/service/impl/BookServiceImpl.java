@@ -83,10 +83,6 @@ public class BookServiceImpl implements BookService {
         }
     }
 
-    /*public void verifyForCreate(BooksRequestDTO booksRequestDTO){
-        verifyBook(booksRequestDTO.getName());
-        verifyPublishing(booksRequestDTO.getPublishingId());
-    }*/
 
     public void deleteById(Integer bookId){
       rentService.verifyDeleteBook(bookId);
@@ -114,23 +110,9 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow(()-> new BookNotFoundException(bookId));
     }
 
-    private void validateDate(BooksRequestDTO bookRequestDTO) {
-        LocalDate today = LocalDate.now();
-        if (bookRequestDTO.getLaunch().isAfter(today)) {
-            throw new InvalidDateReturnException("");
-        }
-    }
-
     public void incrementQuantity(BooksEntity books){
         books.setQuantity(books.getQuantity() + 1);
         booksRepository.save(books);
-    }
-
-    public void decrementQuantity(BooksEntity books){
-        if (books.getQuantity() > 0){
-            books.setQuantity(books.getQuantity() - 1);
-            booksRepository.save(books);
-        }
     }
 
 }

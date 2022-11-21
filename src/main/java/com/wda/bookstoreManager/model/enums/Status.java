@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @Getter
 public enum Status {
 
-    PROGRESS("Progress"),
-    DEADLINE("Deadline"),
-    LATE("Late");
+    PROGRESSO("Progress"),
+    DEVOLVIDO("Deadline"),
+    ATRASADO("Late");
 
     private String status;
 

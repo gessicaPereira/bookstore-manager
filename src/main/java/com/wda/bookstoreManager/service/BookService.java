@@ -23,8 +23,5 @@ public interface BookService {
 
     void incrementQuantity(BooksEntity books);
 
-    void decrementQuantity(BooksEntity books);
-
-    //void decreaseQuantity(BooksEntity books);
 
 }
