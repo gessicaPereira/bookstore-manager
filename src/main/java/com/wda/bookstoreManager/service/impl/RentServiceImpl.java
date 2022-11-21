@@ -1,10 +1,7 @@
 package com.wda.bookstoreManager.service.impl;
 
 
-import com.wda.bookstoreManager.exception.InvalidDateReturnException;
-import com.wda.bookstoreManager.exception.RentAlreadyExistException;
-import com.wda.bookstoreManager.exception.RentImpossibleException;
-import com.wda.bookstoreManager.exception.RentNotFoundException;
+import com.wda.bookstoreManager.exception.*;
 import com.wda.bookstoreManager.mapper.RentMapper;
 import com.wda.bookstoreManager.model.BooksEntity;
 import com.wda.bookstoreManager.model.DTO.RentRequestDTO;
@@ -58,37 +55,50 @@ public class RentServiceImpl implements RentService {
     }
 
     public RentResponseDTO create(RentRequestDTO rentRequestDTO){
+
         BooksEntity foundBook = bookService.verifyAndGet(rentRequestDTO.getBookId());
         UsersEntity foundUser = userService.verifyAndGet(rentRequestDTO.getUser());
 
-
-        RentEntity renToSave = rentMapper.toRentModel(rentRequestDTO);
-        renToSave.setBooks(foundBook);
-        renToSave.setUsers(foundUser);
-        renToSave.setStatus(enumStatusValue(renToSave.getReturn_date(), renToSave.getForecast_return()));
-        verifyCreate(foundUser, foundBook); // se der erro, passar pra linha de cima
-
-        BooksEntity alterQuantity = renToSave.getBooks();
-        verifyReturn(renToSave.getRental_date(), renToSave.getForecast_return());
-        //verifyBookQuantity(alterQuantity, false);
-
-        RentEntity savedRent = rentRepository.save(renToSave);
-        return rentMapper.toDTO(savedRent);
-
-    }
-
-    public RentResponseDTO devolution(Integer rentId){
-        RentEntity foundRent = verifyAndGet(rentId);
-
-        RentEntity rentToSave = foundRent;
-        foundRent.setReturn_date(LocalDate.now());
-        //verifyBookQuantity(rentToSave.getBooks(), true);
+        RentEntity rentToSave = rentMapper.toRentModel(rentRequestDTO);
+        rentToSave.setBooks(foundBook);
+        rentToSave.setUsers(foundUser);
+        rentToSave.setStatus(enumStatusValue(rentToSave.getReturn_date(), rentToSave.getForecast_return()));
+        rentToSave.setId(null);
+        foundBook.setQuantity(foundBook.getQuantity() -1);
+        //rentToSave.setStatus(Status.PROGRESS);
+        verifyCreate(foundUser, foundBook);
+        //verifyQuantity(foundBook.getQuantity());
 
         RentEntity savedRent = rentRepository.save(rentToSave);
         return rentMapper.toDTO(savedRent);
 
     }
 
+
+    public void devolution(Integer id){
+        RentEntity foundRent = verifyAndGet(id);
+        //verifyReturn(foundRent.getReturn_date(), foundRent.getForecast_return());
+
+        //RentEntity rentToDevolution = rentMapper.toRentModel(id);
+        //foundRent.setId(id);
+        foundRent.setReturn_date(LocalDate.now());
+        bookAddQuantity(foundRent.getReturn_date(), foundRent.getBooks());
+        foundRent.setStatus(enumStatusValue(foundRent.getReturn_date(), foundRent.getForecast_return()));
+        RentEntity savedRent = rentRepository.save(foundRent);
+        rentMapper.toDTO(savedRent);
+    }
+
+    private void bookAddQuantity(LocalDate return_date, BooksEntity books){
+        if (return_date != null){
+            bookService.incrementQuantity(books);
+        }
+    }
+
+
+    public void delete(Integer id) {
+        BooksEntity books = verifyAndGet(id).getBooks();
+        rentRepository.deleteById(id);
+    }
 
 
     private Status enumStatusValue(LocalDate return_date, LocalDate forecast_return){
@@ -112,30 +122,13 @@ public class RentServiceImpl implements RentService {
     private void verifyCreate(UsersEntity users, BooksEntity books){
         Optional<RentEntity> foundRent = rentRepository.findByBooksAndUsersAndStatus(books, users, Status.PROGRESS);
         if (foundRent.isPresent()){
-            throw new RentImpossibleException("Not possible");
+            throw new RentImpossibleException("Alguguel já registrado");
         }
     }
 
-    /*private void verifyBookQuantity(BooksEntity books, boolean addQuantity){
-        if (addQuantity){
-            BooksEntity alterQuantity = books;
-            alterQuantity.setQuantity(alterQuantity.getQuantity() + 1);
-            alterQuantity.setQuantityRented(alterQuantity.getQuantityRented() - 1);
-        } else {
-            books.setQuantity(books.getQuantity() - 1);
-            books.setQuantityRented(books.getQuantityRented() + 1);
-        }
-    }*/
-
-    /*private void verifyReturnExist(RentEntity foundRent){
-        if (!foundRent.getReturn_date().equals(Status.PROGRESS)){
-            throw new RentImpossibleException("Book returned!");
-        }
-    }*/
-
-    private RentEntity verifyAndGet(Integer rentId){
-        return rentRepository.findById(rentId)
-                .orElseThrow(() -> new RentNotFoundException(rentId));
+    private RentEntity verifyAndGet(Integer id){
+        return rentRepository.findById(id)
+                .orElseThrow(() -> new RentNotFoundException(id));
     }
 
     public void verifyDeleteBook(Integer id){
@@ -143,6 +136,19 @@ public class RentServiceImpl implements RentService {
         List<RentEntity> rentEntities = rentRepository.findByBooks(books);
         if(rentEntities.size() > 0){
             throw new RentImpossibleException("book associated with rent");
+        }
+    }
+
+    private void verifyRentDelete(Integer id){
+        Status status = rentRepository.findById(id).get().getStatus();
+        if (status.equals(Status.PROGRESS)){
+            throw new DeleteNotPossibleException("Rent in progress!");
+        }
+    }
+
+    private void verifyQuantity(Integer quantity){
+        if (quantity <= 0){
+            throw new InvalidQuantityException();
         }
     }
 

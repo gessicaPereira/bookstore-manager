@@ -40,12 +40,18 @@ public class RentController {
     }
 
     @GetMapping("/{id}")
-    public RentResponseDTO getById(Integer id) {
+    public RentResponseDTO getById(@PathVariable Integer id) {
         return rentService.getById(id);
     }
 
-    @PutMapping("/devolution/{rentId}")
-    public RentResponseDTO devolution(@PathVariable Integer rentId) {
-        return rentService.devolution(rentId);
+    @PutMapping("/devolution/{id}")
+    public void devolution(@PathVariable Integer id) {
+             rentService.devolution(id);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Integer id) {
+        rentService.delete(id);
     }
 }

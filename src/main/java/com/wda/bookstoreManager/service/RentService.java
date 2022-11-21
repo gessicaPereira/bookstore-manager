@@ -15,5 +15,7 @@ public interface RentService {
 
     void verifyDeleteBook(Integer id);
 
-    RentResponseDTO devolution(Integer id);
+    void devolution(Integer id);
+
+    void delete(Integer id);
 }
