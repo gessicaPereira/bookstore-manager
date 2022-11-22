@@ -17,6 +17,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/publishing")
+@CrossOrigin(origins = "*")
 public class PublishingController implements PublishingControllerOpenApi {
 
 
