@@ -43,4 +43,10 @@ public interface BooksControllerOpenApi {
     })
     Page<BooksResponseDTO> findAll(Pageable pageable);
 
+    @ApiOperation(value = "Book delete operation")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "Success book exclusion"),
+            @ApiResponse(code = 404, message = "Book with id not found in the System")
+    })
+    void deleteById(@PathVariable Integer bookId);
 }

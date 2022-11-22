@@ -3,6 +3,7 @@ package com.wda.bookstoreManager.controller;
 import com.wda.bookstoreManager.mapper.RentMapper;
 import com.wda.bookstoreManager.model.DTO.RentRequestDTO;
 import com.wda.bookstoreManager.model.DTO.RentResponseDTO;
+import com.wda.bookstoreManager.open_api.controllers.RentControllerOpenApi;
 import com.wda.bookstoreManager.repository.RentRepository;
 import com.wda.bookstoreManager.service.RentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/rents")
-public class RentController {
+public class RentController implements RentControllerOpenApi {
 
     private RentService rentService;
 
