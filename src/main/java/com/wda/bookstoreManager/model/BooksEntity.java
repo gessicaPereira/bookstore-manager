@@ -40,7 +40,7 @@ public class BooksEntity {
     @Column(columnDefinition = "integer default 0")
     private Integer quantityRented;
     @ManyToOne(cascade = {CascadeType.MERGE})
-    @JoinColumn
+    @JoinColumn(name = "publishingId")
     private PublishingEntity publishing;
 
     @OneToMany(mappedBy = "books", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

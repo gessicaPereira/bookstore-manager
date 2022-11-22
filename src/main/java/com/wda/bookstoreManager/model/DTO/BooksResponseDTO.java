@@ -18,6 +18,7 @@ public class BooksResponseDTO {
     public String author;
     public Integer quantity;
     public PublishingRequestDTO publishing;
+    public Integer publishingId;
     public LocalDate launch;
     public Integer quantityRented;
     public List<RentEntity> rentEntityList;
